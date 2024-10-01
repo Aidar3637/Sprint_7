@@ -1,23 +1,20 @@
 import pytest
-import requests
+import allure
+from tests.data.test_data import CREATE_ORDER_COLORS, EXPECTED_STATUS_CODE, EXPECTED_TRACK_FIELD
 
-BASE_URL = "https://qa-scooter.praktikum-services.ru/api/v1/orders"
 class TestCreateOrder:
-    @pytest.mark.parametrize("color", [
-        ["BLACK"],         # Один цвет
-        ["GREY"],          # Другой цвет
-        ["BLACK", "GREY"], # Оба цвета
-        []                 # Без цвета
-    ])
+
+    @allure.title("Тестирование создания заказа с различными цветами")
+    @pytest.mark.parametrize("color", CREATE_ORDER_COLORS)
     def test_create_order_with_various_colors(self, create_order, color):
         response = create_order(color)
-        assert response.status_code == 201, f"Ожидался код 201, но вернулся {response.status_code}"
+        assert response.status_code == EXPECTED_STATUS_CODE, f"Ожидался код {EXPECTED_STATUS_CODE}, но вернулся {response.status_code}"
         response_data = response.json()
-        assert "track" in response_data, "Ответ не содержит 'track'."
+        assert EXPECTED_TRACK_FIELD in response_data, f"Ответ не содержит '{EXPECTED_TRACK_FIELD}'."
 
-    # Проверка, что заказ создается без указания цвета
+    @allure.title("Проверка, что заказ создается без указания цвета")
     def test_create_order_without_color(self, create_order):
         response = create_order()
-        assert response.status_code == 201, f"Ожидался код 201, но вернулся {response.status_code}"
+        assert response.status_code == EXPECTED_STATUS_CODE, f"Ожидался код {EXPECTED_STATUS_CODE}, но вернулся {response.status_code}"
         response_data = response.json()
-        assert "track" in response_data, "Ответ не содержит 'track'."
+        assert EXPECTED_TRACK_FIELD in response_data, f"Ответ не содержит '{EXPECTED_TRACK_FIELD}'."
